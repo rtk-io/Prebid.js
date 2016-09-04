@@ -1,3 +1,4 @@
+import { auctionmanager } from '../auctionmanager';
 var utils = require('../utils.js');
 var bidfactory = require('../bidfactory.js');
 var bidmanager = require('../bidmanager.js');
@@ -53,7 +54,7 @@ var AardvarkAdapter = function AardvarkAdapter() {
   window.$$PREBID_GLOBAL$$.aardvarkResponse = function (rtkResponseObj) {
 
     //Get all initial Aardvark Bid Objects
-    var bidsObj = $$PREBID_GLOBAL$$._bidsRequested.filter(function (bidder) {
+    var bidsObj = auctionmanager.getAuction().bidsRequested.filter(function (bidder) {
       return bidder.bidderCode === 'aardvark';
     })[0];
 

@@ -6,6 +6,7 @@ var utils = require('./utils.js');
 var CONSTANTS = require('./constants.json');
 var events = require('./events');
 import { BaseAdapter } from './adapters/baseAdapter';
+import { auctionmanager } from './auctionmanager';
 
 var _bidderRegistry = {};
 exports.bidderRegistry = _bidderRegistry;
@@ -27,13 +28,19 @@ function getBids({ bidderCode, requestId, bidderRequestId, adUnits }) {
 
 exports.callBids = ({ adUnits, cbTimeout }) => {
   const requestId = utils.generateUUID();
-
+  const auction = {
+    requestId,
+    cbTimeout,
+    adUnits,
+    bidsRequested: [],
+    bidsReceived: []
+  };
   const auctionInit = {
     timestamp: Date.now(),
-    requestId,
+    requestId
   };
   events.emit(CONSTANTS.EVENTS.AUCTION_INIT, auctionInit);
-
+  auctionmanager.holdAuction(auction);
   getBidderCodes(adUnits).forEach(bidderCode => {
     const adapter = _bidderRegistry[bidderCode];
     if (adapter) {
@@ -47,7 +54,7 @@ exports.callBids = ({ adUnits, cbTimeout }) => {
         timeout: cbTimeout
       };
       utils.logMessage(`CALLING BIDDER ======= ${bidderCode}`);
-      $$PREBID_GLOBAL$$._bidsRequested.push(bidderRequest);
+      auction.bidsRequested.push(bidderRequest);
       events.emit(CONSTANTS.EVENTS.BID_REQUESTED, bidderRequest);
       if (bidderRequest.bids && bidderRequest.bids.length) {
         adapter.callBids(bidderRequest);

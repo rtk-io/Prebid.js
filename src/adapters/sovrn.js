@@ -1,3 +1,4 @@
+import { auctionmanager } from '../auctionmanager';
 var CONSTANTS = require('../constants.json');
 var utils = require('../utils.js');
 var bidfactory = require('../bidfactory.js');
@@ -72,7 +73,7 @@ var SovrnAdapter = function SovrnAdapter() {
   }
 
   function addBlankBidResponses(impidsWithBidBack) {
-    var missing = $$PREBID_GLOBAL$$._bidsRequested.find(bidSet => bidSet.bidderCode === 'sovrn').bids
+    var missing = auctionmanager.getAuction().bidsRequested.find(bidSet => bidSet.bidderCode === 'sovrn').bids
       .filter(bid => impidsWithBidBack.indexOf(bid.bidId) < 0);
 
     missing.forEach(function (bidRequest) {
@@ -99,7 +100,7 @@ var SovrnAdapter = function SovrnAdapter() {
           var bid = {};
 
           // try to fetch the bid request we sent Sovrn
-          var bidObj = $$PREBID_GLOBAL$$._bidsRequested.find(bidSet => bidSet.bidderCode === 'sovrn').bids
+          var bidObj = auctionmanager.getAuction().bidsRequested.find(bidSet => bidSet.bidderCode === 'sovrn').bids
           .find(bid => bid.bidId === id);
 
           if (bidObj) {

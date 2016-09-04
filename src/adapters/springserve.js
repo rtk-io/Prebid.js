@@ -1,3 +1,4 @@
+import { auctionmanager } from '../auctionmanager';
 var bidfactory = require('../bidfactory.js');
 var bidmanager = require('../bidmanager.js');
 var adloader = require('../adloader');
@@ -68,7 +69,7 @@ SpringServeAdapter = function SpringServeAdapter() {
       //look up the request attributs stored in the bidmanager
       var responseBid = responseObj.seatbid[0].bid[0];
       //var requestObj = bidmanager.getPlacementIdByCBIdentifer(responseBid.impid);
-      var requestBids = $$PREBID_GLOBAL$$._bidsRequested.find(bidSet => bidSet.bidderCode === 'springserve').bids
+      var requestBids = auctionmanager.getAuction().bidsRequested.find(bidSet => bidSet.bidderCode === 'springserve').bids
         .filter(bid => bid.params && bid.params.impId === +responseBid.impid);
       var bid = bidfactory.createBid(1);
       var placementCode;

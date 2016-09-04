@@ -1,3 +1,4 @@
+import { auctionmanager } from '../auctionmanager';
 var CONSTANTS = require('../constants.json');
 var utils = require('../utils.js');
 var bidfactory = require('../bidfactory.js');
@@ -135,7 +136,7 @@ var BrightcomAdapter = function BrightcomAdapter() {
       brightcomResponseObj.seatbid[0].bid.forEach( function(curBid) {
 
         // Get the bid request data
-        var bidRequest = $$PREBID_GLOBAL$$._bidsRequested.find(bidSet => bidSet.bidderCode === 'brightcom').bids[0]; // this assumes a single request only
+        var bidRequest = auctionmanager.getAuction().bidsRequested.find(bidSet => bidSet.bidderCode === 'brightcom').bids[0]; // this assumes a single request only
 
         // Make sure the bid exists
         if (bidRequest) {

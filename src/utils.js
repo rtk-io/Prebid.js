@@ -1,3 +1,4 @@
+import { auctionmanager } from './auctionmanager';
 var CONSTANTS = require('./constants.json');
 
 var objectType_object = 'object';
@@ -505,7 +506,7 @@ export function flatten(a, b) {
 }
 
 export function getBidRequest(id) {
-  return $$PREBID_GLOBAL$$._bidsRequested.map(bidSet => bidSet.bids.find(bid => bid.bidId === id)).find(bid => bid);
+  return auctionmanager.getAuction().bidsRequested.map(bidSet => bidSet.bids.find(bid => bid.bidId === id)).find(bid => bid);
 }
 
 export function getKeys(obj) {

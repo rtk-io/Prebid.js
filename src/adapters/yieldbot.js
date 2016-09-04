@@ -2,6 +2,7 @@
  * @overview Yieldbot sponsored Prebid.js adapter.
  * @author elljoh
  */
+import { auctionmanager } from '../auctionmanager';
 var adloader = require('../adloader');
 var bidfactory = require('../bidfactory');
 var bidmanager = require('../bidmanager');
@@ -124,7 +125,7 @@ var YieldbotAdapter = function YieldbotAdapter() {
         var placementCode;
         var adapterConfig;
 
-        adapterConfig = $$PREBID_GLOBAL$$._bidsRequested
+        adapterConfig = auctionmanager.getAuction().bidsRequested
             .find(bidderRequest => bidderRequest.bidderCode === 'yieldbot').bids
               .find(bid => bid.bidId === v) || {};
         slot = adapterConfig.params.slot || '';

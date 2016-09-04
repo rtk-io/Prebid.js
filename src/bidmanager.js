@@ -1,4 +1,5 @@
 import { uniques } from './utils';
+import { auctionmanager } from './auctionmanager';
 
 var CONSTANTS = require('./constants.json');
 var utils = require('./utils.js');
@@ -21,10 +22,10 @@ const _hgPriceCap = 20.00;
  * @return {array} [description]
  */
 exports.getTimedOutBidders = function () {
-  return $$PREBID_GLOBAL$$._bidsRequested
+  return auctionmanager.getAuction().bidsRequested
     .map(getBidderCode)
     .filter(uniques)
-    .filter(bidder => $$PREBID_GLOBAL$$._bidsReceived
+    .filter(bidder => auctionmanager.getAuction().bidsReceived
       .map(getBidders)
       .filter(uniques)
       .indexOf(bidder) < 0);
@@ -41,8 +42,8 @@ function getBidders(bid) {
 }
 
 function bidsBackAdUnit(adUnitCode) {
-  const requested = $$PREBID_GLOBAL$$.adUnits.find(unit => unit.code === adUnitCode).bids.length;
-  const received = $$PREBID_GLOBAL$$._bidsReceived.filter(bid => bid.adUnitCode === adUnitCode).length;
+  const requested = auctionmanager.getAuction().adUnits.find(unit => unit.code === adUnitCode).bids.length;
+  const received = auctionmanager.getAuction().bidsReceived.filter(bid => bid.adUnitCode === adUnitCode).length;
   return requested === received;
 }
 
@@ -51,8 +52,8 @@ function add(a, b) {
 }
 
 function bidsBackAll() {
-  const requested = $$PREBID_GLOBAL$$._bidsRequested.map(bidSet => bidSet.bids.length).reduce(add);
-  const received = $$PREBID_GLOBAL$$._bidsReceived.length;
+  const requested = auctionmanager.getAuction().bidsRequested.map(bidSet => bidSet.bids.length).reduce(add);
+  const received = auctionmanager.getAuction().bidsReceived.length;
   return requested === received;
 }
 
@@ -61,13 +62,17 @@ exports.bidsBackAll = function() {
 };
 
 function getBidSetForBidder(bidder) {
-  return $$PREBID_GLOBAL$$._bidsRequested.find(bidSet => bidSet.bidderCode === bidder) || { start: null, requestId: null };
+  return auctionmanager
+      .getAuction()
+      .bidsRequested
+      .find(bidSet => bidSet.bidderCode === bidder) || { start: null, requestId: null };
 }
 
 /*
  *   This function should be called to by the bidder adapter to register a bid response
  */
 exports.addBidResponse = function (adUnitCode, bid) {
+  auctionmanager.handleBidReceived(bid);
   if (bid) {
 
     Object.assign(bid, {
@@ -81,7 +86,7 @@ exports.addBidResponse = function (adUnitCode, bid) {
 
     bid.timeToRespond = bid.responseTimestamp - bid.requestTimestamp;
 
-    if (bid.timeToRespond > $$PREBID_GLOBAL$$.bidderTimeout) {
+    if (bid.timeToRespond > auctionmanager.getAuction().cbTimeout) {
       const timedOut = true;
 
       this.executeCallback(timedOut);
@@ -113,7 +118,7 @@ exports.addBidResponse = function (adUnitCode, bid) {
       bid.adserverTargeting = keyValues;
     }
 
-    $$PREBID_GLOBAL$$._bidsReceived.push(bid);
+    //$$PREBID_GLOBAL$$._bidsReceived.push(bid);
   }
 
   if (bid && bid.adUnitCode && bidsBackAdUnit(bid.adUnitCode)) {
@@ -294,7 +299,7 @@ function processCallbacks(callbackQueue) {
   if (utils.isArray(callbackQueue)) {
     for (i = 0; i < callbackQueue.length; i++) {
       var func = callbackQueue[i];
-      func.call($$PREBID_GLOBAL$$, $$PREBID_GLOBAL$$._bidsReceived.reduce(groupByPlacement, {}));
+      func.call($$PREBID_GLOBAL$$, auctionmanager.getAuction().bidsReceived.reduce(groupByPlacement, {}));
     }
   }
 }

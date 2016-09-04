@@ -1,3 +1,4 @@
+import { auctionmanager } from '../auctionmanager';
 var CONSTANTS = require('../constants.json');
 var utils = require('../utils.js');
 var bidfactory = require('../bidfactory.js');
@@ -74,7 +75,7 @@ var MemeGlobalAdapter = function MemeGlobalAdapter() {
   }
 
   function getBidSetForBidder() {
-    return $$PREBID_GLOBAL$$._bidsRequested.find(bidSet => bidSet.bidderCode === bidderName);
+    return auctionmanager.getAuction().bidsRequested.find(bidSet => bidSet.bidderCode === bidderName);
   }
 
   // expose the callback to the global object:

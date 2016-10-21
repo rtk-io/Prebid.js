@@ -1203,4 +1203,23 @@ describe('Unit: Prebid Module', function () {
     });
   });
 
+  describe('getVastUrl', () => {
+    it('returns the vast url and cpm from a video-enabled ad unit', () => {
+      const bid = {
+        "adUnitCode": "/19968336/header-bid-tag-0",
+        "bidderCode": "appnexusAst",
+        "cpm": 10,
+        "vastUrl": "http://lax1-ib.adnxs.com/ab?e=wqT_3QL8BKh8AgAAAwDWAAUBCM",
+      };
+      $$PREBID_GLOBAL$$._bidsReceived = [bid];
+
+      const vastObject = pbjs.getVastUrl(bid.adUnitCode);
+
+      expect(vastObject.vastUrl).to.equal(bid.vastUrl);
+      expect(vastObject.cpm).to.equal(bid.cpm);
+
+      resetAuction();
+    });
+  });
+
 });

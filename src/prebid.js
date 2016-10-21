@@ -804,4 +804,25 @@ $$PREBID_GLOBAL$$.buildMasterVideoTagFromAdserverTag = function (adserverTag, op
   return masterTag;
 };
 
+/**
+ * Returns the VAST URL and associated bid price from a video-enabled adUnit
+ * @param {string} adUnitCode video-enabled adUnit code
+ * @return {object} object containing VAST URL and bid price
+ */
+$$PREBID_GLOBAL$$.getVastUrl = function (adUnitCode) {
+  const bidObject = $$PREBID_GLOBAL$$._bidsReceived.find(
+    bid => bid.adUnitCode === adUnitCode
+  );
+
+  if (bidObject && bidObject.vastUrl) {
+    return {
+      vastUrl: bidObject.vastUrl,
+      cpm: bidObject.cpm
+    };
+  } else {
+    utils.logError(`${adUnitCode} doesn't have a VAST URL`);
+    return;
+  }
+};
+
 processQue();

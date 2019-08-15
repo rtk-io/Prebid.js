@@ -61,6 +61,10 @@ export const spec = {
           endpoint: DEFAULT_ENDPOINT
         };
 
+        if (typeof b.params.uid === 'string' && b.params.uid.length) {
+          rMap.payload.uid = b.params.uid;
+        }
+
         if (tdId) {
           rMap.payload.tdid = tdId;
         }
